@@ -1,0 +1,119 @@
+#!/bin/sh
+#
+# newsboat-solarized – Ethan Schoonover's precision colours[0] for newsboat
+#
+# Written in 2020 by Repentinus <newsboat-solarized at repentinus dot eu>
+#
+# To the extent possible under law, the author(s) have dedicated all copyright
+# and related and neighboring rights to this software to the public domain
+# worldwide. This software is distributed without any warranty.
+#
+# You should have received a copy of the CC0 Public Domain Dedication along with
+# this software. If not, see [1].
+#
+# [0] https://ethanschoonover.com/solarized/
+# [1] http://creativecommons.org/publicdomain/zero/1.0/
+
+greeting() {
+  for line in\
+    "newsboat-solarized – Ethan Schoonover's precision colours[0] for newsboat"\
+    ""\
+    "Written in 2020 by Repentinus <newsboat-solarized at repentinus dot eu>"\
+    ""\
+    "To the extent possible under law, the author(s) have dedicated all copyright"\
+    "and related and neighboring rights to this software to the public domain"\
+    "worldwide. This software is distributed without any warranty."\
+    ""\
+    "You should have received a copy of the CC0 Public Domain Dedication along with"\
+    "this software. If not, see [1]."\
+    ""\
+    "[0] https://ethanschoonover.com/solarized/"\
+    "[1] http://creativecommons.org/publicdomain/zero/1.0/"\
+    ""\
+    "Usage: newsboat-solarized (dark|light) (16|256)"\
+    "       newsboat-solarized all"\
+    ""\
+    "The first form prints the corresponding configuration to the standard output."\
+    ""\
+    "The second form writes all possible configurations to files named"\
+    "'solarized-(dark|light)-(16|256).rc' in the current working directory."
+  do
+    printf '%s\n' "${line}"
+  done
+}
+
+colour() {
+  if [ "$1" = "dark" ]
+  then
+    _base="03 02 01 00 0 1 2 3"
+  elif [ "$1" = "light" ]
+  then
+    _base="3 2 1 0 00 01 02 03"
+  else
+    return 1
+  fi
+  base=""
+  for suffix in ${_base}
+  do
+    base="${base}base${suffix} "
+  done
+
+  if [ "$2" -eq 16 ]
+  then
+    _palette="8 0 10 11 12 14 7 15 3 9 1 5 13 4 6 2"
+  elif [ "$2" -eq 256 ]
+  then
+    _palette="234 235 240 241 244 245 254 230 136 166 160 125 61 33 37 64"
+  else
+    return 2
+  fi
+  palette=""
+  for suffix in ${_palette}
+  do
+    palette="${palette}color${suffix} "
+  done
+  
+  names="${base}yellow orange red magenta violet blue cyan green"
+
+  out=""
+  out="${out}color background base0 base03\n"
+  out="${out}color listnormal base0 base03\n"
+  out="${out}color listfocus base03 yellow\n"
+  out="${out}color listnormal_unread blue base03\n"
+  out="${out}color listfocus_unread base03 yellow\n"
+  out="${out}color info base0 base02\n"
+  out="${out}color article base0 base03\n"
+
+  i=1
+  while a=$(echo "${names}" | cut -f "${i}" -d ' '); b=$(echo "${palette}" | cut -f "${i}" -d ' '); [ -n "${a}" ]
+  do
+    out=$(printf '%b' "${out}" | sed -E -e "s/(${a}\$)/${b}/" -e "s/${a} /${b} /")
+    i=$((i + 1))
+  done
+  
+  printf '%s\n' "${out}"
+}
+
+if [ $# -eq 0 ]
+then
+  greeting
+elif [ $# -eq 2 ]
+then
+  if ! colour "$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')" "$2"
+  then
+    printf "Invalid parameter value supplied. Run \`newsboat-solarized\` without\n" >&2
+    printf "any arguments for more guidance.\n" >&2
+  fi
+elif [ $# -eq 1 ] && [ "$1" = 'all' ]
+then
+  for c in "dark" "light"
+  do
+    for d in 16 256
+    do
+      colour "${c}" "${d}" > "solarized-${c}-${d}.rc"
+    done
+  done
+else
+  printf "Invalid usage. Run \`newsboat-solarized\` without any arguments for more guidance.\n" >&2
+fi
+

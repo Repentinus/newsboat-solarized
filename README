@@ -1,0 +1,21 @@
+newsboat-solarized – Ethan Schoonover's precision colours[0] for newsboat
+
+Written in 2020 by Repentinus <newsboat-solarized at repentinus dot eu>
+
+To the extent possible under law, the author(s) have dedicated all copyright
+and related and neighboring rights to this software to the public domain
+worldwide. This software is distributed without any warranty.
+
+You should have received a copy of the CC0 Public Domain Dedication along with
+this software. If not, see [1].
+
+[0] https://ethanschoonover.com/solarized/
+[1] http://creativecommons.org/publicdomain/zero/1.0/
+
+Usage: newsboat-solarized (dark|light) (16|256)
+       newsboat-solarized all
+
+The first form prints the corresponding configuration to the standard output.
+
+The second form writes all possible configurations to files named
+'solarized-(dark|light)-(16|256).rc' in the current working directory.
